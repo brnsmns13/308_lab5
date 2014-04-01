@@ -252,7 +252,51 @@ void round_robin_priority(struct process *proc)
       struct process *p = &proc[i];
 
       // Prepare each process to run
-      if(p->arrivaltime <= current_time && !p->flag && p->priority == current_priority)
+      if(p->arrivaltime <= current_time && !p->flag && p->priority == 2)
+      {
+        mod = 1;
+        if(!p->starttime)
+        {
+          p->starttime = current_time;
+          p->remainingtime = p->runtime;
+        }
+
+        // Decrement the current process and check if done
+        if(!p->remainingtime--)
+        {
+          p->endtime = current_time;
+          p->flag = 1;
+          average += p->endtime - p->arrivaltime;
+          printf("Process %d started at time %d\n", i, p->starttime);
+          printf("Process %d finished at time %d\n", i, p->endtime);
+        }
+        // Increment the current time
+        current_time++;
+      }
+      // Prepare each process to run
+      else if(p->arrivaltime <= current_time && !p->flag && p->priority == 1 && !mod)
+      {
+        mod = 1;
+        if(!p->starttime)
+        {
+          p->starttime = current_time;
+          p->remainingtime = p->runtime;
+        }
+
+        // Decrement the current process and check if done
+        if(!p->remainingtime--)
+        {
+          p->endtime = current_time;
+          p->flag = 1;
+          average += p->endtime - p->arrivaltime;
+          printf("Process %d started at time %d\n", i, p->starttime);
+          printf("Process %d finished at time %d\n", i, p->endtime);
+        }
+        // Increment the current time
+        current_time++;
+      }
+      // Prepare each process to run
+      else if(p->arrivaltime <= current_time && !p->flag && p->priority == 0 && !mod)
       {
         mod = 1;
         if(!p->starttime)
@@ -277,12 +321,8 @@ void round_robin_priority(struct process *proc)
     // Check if loop is complete
     if(!mod)
     {
-      if(!current_priority--)
-      {
-        printf("Average time from arrival to finish is %d\n", average / NUM_PROCESSES);
-        run = 0;
-      }
-        
+      printf("Average time from arrival to finish is %d\n", average / NUM_PROCESSES);
+      run = 0;  
     }
 
   }
